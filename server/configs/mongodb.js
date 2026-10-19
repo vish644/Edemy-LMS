@@ -15,18 +15,22 @@
 
 import mongoose from "mongoose";
 
-// Connect to the MongoDB database
 const connectDB = async () => {
-  try {
-    await mongoose.connect(
-      `${process.env.MONGODB_URI}/Learning Management System (LMS)`,
-    );
-
-    console.log("Database Connected!");
-  } catch (error) {
-    console.error("Database connection failed:", error.message);
-    process.exit(1);
+  if (mongoose.connection.readyState === 1) {
+    console.log("Database already connected!");
+    return;
   }
+
+  if (!process.env.MONGODB_URI) {
+    throw new Error("MONGODB_URI is missing from environment variables");
+  }
+
+  await mongoose.connect(process.env.MONGODB_URI, {
+    dbName: "Learning Management System (LMS New)",
+    serverSelectionTimeoutMS: 10000,
+  });
+
+  console.log("Database Connected!");
 };
 
 export default connectDB;
